@@ -87,7 +87,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-.metadata/
+.metadata
 .DS_Store
 .project
 .pydevproject
