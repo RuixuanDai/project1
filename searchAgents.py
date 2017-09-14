@@ -367,11 +367,44 @@ def cornersHeuristic(state, problem):
     on the shortest path from the state to a goal of the problem; i.e.
     it should be admissible (as well as consistent).
     """
+    def manhattan(p1, p2):
+        "The Manhattan distance heuristic for a PositionSearchProblem"
+        return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
+    def euclidean(p1, p2):
+        "The Euclidean distance heuristic for a PositionSearchProblem"
+        return ( (p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2 ) ** 0.5
+
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+    min = 0
+    unCorner = state[1]
+    if not (unCorner&0b0001) == 0:
+        distance1 = manhattan(state[0], corners[0])
+        distance2 = euclidean(state[0], corners[0])
+        min = min if distance2<min else distance2
+        min = min if distance1<min else distance1# eat 0 corner
+    if not (unCorner&0b0010) == 0:
+        distance1 = manhattan(state[0], corners[1])
+        distance2 = euclidean(state[0], corners[1])
+        min = min if distance2<min else distance2
+        min = min if distance1<min else distance1  # eat 1st corner
+    if not (unCorner&0b0100) == 0:
+        distance1 = manhattan(state[0], corners[2])
+        distance2 = euclidean(state[0], corners[2])
+        min = min if distance2<min else distance2
+        min = min if distance1<min else distance1
+    if not (unCorner&0b1000) == 0:
+        distance1 = manhattan(state[0], corners[3])
+        distance2 = euclidean(state[0], corners[3])
+        min = min if distance2<min else distance2
+        min = min if distance1<min else distance1
+    
+    return min
 
-    "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+
+
+#     "*** YOUR CODE HERE ***"
+#     return 0 # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
