@@ -376,30 +376,31 @@ def cornersHeuristic(state, problem):
 
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-    min = 0
+#     min = 0
     unCorner = state[1]
+    distance = [0]
     if not (unCorner&0b0001) == 0:
-        distance1 = manhattan(state[0], corners[0])
+        distance.append(manhattan(state[0], corners[0])) 
 #         distance2 = euclidean(state[0], corners[0])
 #         min = min if distance2<min else distance2
-        min = min if distance1<min else distance1# eat 0 corner
+#         min = min if distance1<min else distance1# eat 0 corner
     if not (unCorner&0b0010) == 0:
-        distance1 = manhattan(state[0], corners[1])
+        distance.append(manhattan(state[0], corners[1])) 
 #         distance2 = euclidean(state[0], corners[1])
 #         min = min if distance2<min else distance2
-        min = min if distance1<min else distance1  # eat 1st corner
+#        min = min if distance1<min else distance1  # eat 1st corner
     if not (unCorner&0b0100) == 0:
-        distance1 = manhattan(state[0], corners[2])
+        distance.append(manhattan(state[0], corners[2])) 
 #         distance2 = euclidean(state[0], corners[2])
 #         min = min if distance2<min else distance2
-        min = min if distance1<min else distance1
+#        distance.append(manhattan(state[0], corners[0])) 
     if not (unCorner&0b1000) == 0:
-        distance1 = manhattan(state[0], corners[3])
+        distance.append(manhattan(state[0], corners[3])) 
 #         distance2 = euclidean(state[0], corners[3])
 #         min = min if distance2<min else distance2
-        min = min if distance1<min else distance1
+#        min = min if distance1<min else distance1
     
-    return min
+    return max(distance)
 
 
 
@@ -576,7 +577,8 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.astar(problem)
+
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -612,7 +614,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.food[x][y]
 
 ##################
 # Mini-contest 1 #
