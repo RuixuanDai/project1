@@ -127,6 +127,7 @@ def breadthFirstSearch(problem):
     childcontainer = util.Queue()
     path=[]
     
+    print "using bfs!!!!!\n\n\n"
     
     
     firstnode = problem.getStartState()

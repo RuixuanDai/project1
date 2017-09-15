@@ -370,9 +370,9 @@ def cornersHeuristic(state, problem):
     def manhattan(p1, p2):
         "The Manhattan distance heuristic for a PositionSearchProblem"
         return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
-    def euclidean(p1, p2):
-        "The Euclidean distance heuristic for a PositionSearchProblem"
-        return ( (p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2 ) ** 0.5
+#     def euclidean(p1, p2):
+#         "The Euclidean distance heuristic for a PositionSearchProblem"
+#         return ( (p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2 ) ** 0.5
 
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
@@ -380,23 +380,23 @@ def cornersHeuristic(state, problem):
     unCorner = state[1]
     if not (unCorner&0b0001) == 0:
         distance1 = manhattan(state[0], corners[0])
-        distance2 = euclidean(state[0], corners[0])
-        min = min if distance2<min else distance2
+#         distance2 = euclidean(state[0], corners[0])
+#         min = min if distance2<min else distance2
         min = min if distance1<min else distance1# eat 0 corner
     if not (unCorner&0b0010) == 0:
         distance1 = manhattan(state[0], corners[1])
-        distance2 = euclidean(state[0], corners[1])
-        min = min if distance2<min else distance2
+#         distance2 = euclidean(state[0], corners[1])
+#         min = min if distance2<min else distance2
         min = min if distance1<min else distance1  # eat 1st corner
     if not (unCorner&0b0100) == 0:
         distance1 = manhattan(state[0], corners[2])
-        distance2 = euclidean(state[0], corners[2])
-        min = min if distance2<min else distance2
+#         distance2 = euclidean(state[0], corners[2])
+#         min = min if distance2<min else distance2
         min = min if distance1<min else distance1
     if not (unCorner&0b1000) == 0:
         distance1 = manhattan(state[0], corners[3])
-        distance2 = euclidean(state[0], corners[3])
-        min = min if distance2<min else distance2
+#         distance2 = euclidean(state[0], corners[3])
+#         min = min if distance2<min else distance2
         min = min if distance1<min else distance1
     
     return min
@@ -467,7 +467,7 @@ class AStarFoodSearchAgent(SearchAgent):
     def __init__(self):
         self.searchFunction = lambda prob: search.aStarSearch(prob, foodHeuristic)
         self.searchType = FoodSearchProblem
-
+        
 def foodHeuristic(state, problem):
     """
     Your heuristic for the FoodSearchProblem goes here.
@@ -495,7 +495,60 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    def manhattan(p1, p2):
+        "The Manhattan distance heuristic for a PositionSearchProblem"
+        return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
+    
+    def getSucc(curNode,walls):
+        succs = []
+        for (dx,dy) in [(0,1),(0,-1),(1,0),(-1,0)]:
+             nextX,nextY = curNode[0]+dx,curNode[1]+dy
+             if not walls[nextX][nextY]:
+                 nextNode = (nextX,nextY)
+                 distance = cost = 1
+                 succs.append((nextNode,distance,cost))
+        return succs
+    
+    
+    #implement A* to the nearest food, return the actual distance
+    def aStartToFood(p1,p2,walls):
+        nodeset=set()
+        childcontainer = util.PriorityQueue()
+        path=0         
+        firstnode = p1    
+        #watch out! the .pop() will not pop the cost!!!!
+        cost = manhattan(p1, p2)
+        childcontainer.push((firstnode,path,cost) ,cost) #(node,path[],cost),cost
+        while not childcontainer.isEmpty():
+            (curNode,distance,cost) = childcontainer.pop()
+            if curNode in nodeset: 
+                continue
+            if p2 == curNode:
+                return distance
+            nodeset.add(curNode)
+    
+            for succ in getSucc(curNode,walls):           
+                newCost = cost+succ[2]          
+                newDistance = distance + succ[1]
+                childcontainer.push((succ[0],newDistance,newCost),newDistance+manhattan(succ[0],p2))   
+        return none
+    
+    
+    
+    
+    if 'fisrtTime' not in problem.heuristicInfo:
+        problem.heuristicInfo['fisrtTime'] = 1
+        problem.heuristicInfo['walls'] = problem.walls
+    
+        
+    foodH = [0]
+    for food in foodGrid.asList():
+        foodH.append(aStartToFood(position, food , problem.heuristicInfo['walls']))  
+    return max(foodH)
+#     return 0
+
+
+
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
